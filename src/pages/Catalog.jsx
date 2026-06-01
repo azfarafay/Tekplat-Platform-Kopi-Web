@@ -1,42 +1,43 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
 const Catalog = () => {
   const { roasteryId } = useParams();
   const [products, setProducts] = useState([]);
-  const [roasteryName, setRoasteryName] = useState('');
+  const [roasteryName, setRoasteryName] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [orderLoading, setOrderLoading] = useState(false);
-  const [orderMessage, setOrderMessage] = useState('');
+  const [orderMessage, setOrderMessage] = useState("");
   const navigate = useNavigate();
 
-  const userString = localStorage.getItem('user');
+  const userString = localStorage.getItem("user");
   const user = userString ? JSON.parse(userString) : null;
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
   };
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      setError('');
+      setError("");
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
-          navigate('/');
+          navigate("/");
           return;
         }
 
         const response = await axios.get(
-          `http://localhost:5000/api/products?roastery_id=${roasteryId}`,
+          import.meta.env.VITE_API_URL +
+            `/api/products?roastery_id=${roasteryId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
 
@@ -48,13 +49,13 @@ const Catalog = () => {
             setRoasteryName(data[0].roastery_name);
           }
         } else {
-          setError(response.data?.message || 'Gagal memuat katalog.');
+          setError(response.data?.message || "Gagal memuat katalog.");
         }
       } catch (err) {
         if (err.response?.status === 401 || err.response?.status === 403) {
           handleLogout();
         } else {
-          setError(err.response?.data?.message || 'Terjadi kesalahan koneksi.');
+          setError(err.response?.data?.message || "Terjadi kesalahan koneksi.");
         }
       } finally {
         setLoading(false);
@@ -67,7 +68,7 @@ const Catalog = () => {
   const openCheckoutModal = (kopi) => {
     setSelectedProduct(kopi);
     setQuantity(1);
-    setOrderMessage('');
+    setOrderMessage("");
     setIsModalOpen(true);
   };
 
@@ -75,7 +76,7 @@ const Catalog = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
     setQuantity(1);
-    setOrderMessage('');
+    setOrderMessage("");
   };
 
   const handleQuantityChange = (event) => {
@@ -86,14 +87,17 @@ const Catalog = () => {
   const handleCheckout = async () => {
     if (!selectedProduct) return;
     setOrderLoading(true);
-    setOrderMessage('');
+    setOrderMessage("");
 
     try {
-      const token = localStorage.getItem('token');
-      if (!token) { handleLogout(); return; }
+      const token = localStorage.getItem("token");
+      if (!token) {
+        handleLogout();
+        return;
+      }
 
       const response = await axios.post(
-        'http://localhost:5000/api/transactions',
+        import.meta.env.VITE_API_URL + `/api/transactions`,
         {
           product_id: selectedProduct.id || selectedProduct._id,
           quantity,
@@ -102,7 +106,7 @@ const Catalog = () => {
       );
 
       if (response.data && response.data.success) {
-        setOrderMessage(response.data.message || 'Pesanan berhasil dibuat.');
+        setOrderMessage(response.data.message || "Pesanan berhasil dibuat.");
         setTimeout(() => {
           closeCheckoutModal();
           // Refresh produk setelah order
@@ -115,11 +119,11 @@ const Catalog = () => {
           );
         }, 2000);
       } else {
-        throw new Error(response.data?.message || 'Gagal membuat pesanan.');
+        throw new Error(response.data?.message || "Gagal membuat pesanan.");
       }
     } catch (err) {
       setOrderMessage(
-        err.response?.data?.message || err.message || 'Gagal membuat pesanan.',
+        err.response?.data?.message || err.message || "Gagal membuat pesanan.",
       );
     } finally {
       setOrderLoading(false);
@@ -138,24 +142,32 @@ const Catalog = () => {
       <nav className="px-8 py-6 flex justify-between items-center border-b border-stone-200/60 bg-[#FDFBF7]/80 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-baseline gap-4">
           <button
-            onClick={() => navigate('/select-roastery')}
+            onClick={() => navigate("/select-roastery")}
             className="text-sm font-medium text-stone-400 hover:text-stone-700 transition-colors flex items-center gap-1.5"
           >
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              className="w-3.5 h-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <polyline points="15 18 9 12 15 6" />
             </svg>
             Roastery
           </button>
           <span className="text-stone-300">/</span>
           <h1 className="text-lg font-serif font-semibold tracking-tight text-stone-900">
-            {roasteryName || 'Katalog'}
+            {roasteryName || "Katalog"}
             <span className="text-amber-700">.</span>
           </h1>
           {user && (
             <span className="text-sm font-medium text-stone-500 tracking-wide hidden md:inline">
               {user.name}
               <span className="mx-2 opacity-40">•</span>
-              <span className="capitalize">{user.role.replace('_', ' ')}</span>
+              <span className="capitalize">{user.role.replace("_", " ")}</span>
             </span>
           )}
         </div>
@@ -171,9 +183,7 @@ const Catalog = () => {
         {/* Header */}
         <header className="mb-16 max-w-2xl">
           <h2 className="text-4xl lg:text-5xl font-light tracking-tight text-stone-900 mb-4">
-            {roasteryName
-              ? `Katalog ${roasteryName}.`
-              : 'Katalog Produk.'}
+            {roasteryName ? `Katalog ${roasteryName}.` : "Katalog Produk."}
           </h2>
           <p className="text-lg text-stone-500 leading-relaxed">
             Temukan profil sangrai yang sesuai dengan karakter kedai Anda.
@@ -248,7 +258,7 @@ const Catalog = () => {
                         Harga B2B
                       </span>
                       <span className="text-lg font-semibold text-stone-900">
-                        Rp {Number(kopi.price).toLocaleString('id-ID')}
+                        Rp {Number(kopi.price).toLocaleString("id-ID")}
                       </span>
                     </div>
 
@@ -279,7 +289,7 @@ const Catalog = () => {
                   {selectedProduct.name}
                 </h3>
                 <p className="mt-2 text-sm text-stone-500">
-                  Harga satuan: Rp {productPrice.toLocaleString('id-ID')}
+                  Harga satuan: Rp {productPrice.toLocaleString("id-ID")}
                 </p>
               </div>
               <button
@@ -312,7 +322,7 @@ const Catalog = () => {
                   <div>
                     <p className="text-sm text-stone-500">Harga asli</p>
                     <p className="mt-2 text-xl font-semibold text-stone-900">
-                      Rp {totalPrice.toLocaleString('id-ID')}
+                      Rp {totalPrice.toLocaleString("id-ID")}
                     </p>
                   </div>
 
@@ -322,10 +332,10 @@ const Catalog = () => {
                         Diskon 10%
                       </p>
                       <p className="mt-2 text-sm text-stone-500 line-through">
-                        Rp {totalPrice.toLocaleString('id-ID')}
+                        Rp {totalPrice.toLocaleString("id-ID")}
                       </p>
                       <p className="mt-3 text-2xl font-semibold text-stone-900">
-                        Rp {finalPrice.toLocaleString('id-ID')}
+                        Rp {finalPrice.toLocaleString("id-ID")}
                       </p>
                     </div>
                   )}
@@ -334,7 +344,7 @@ const Catalog = () => {
                     <div>
                       <p className="text-sm text-stone-500">Total akhir</p>
                       <p className="mt-2 text-3xl font-semibold text-stone-900">
-                        Rp {finalPrice.toLocaleString('id-ID')}
+                        Rp {finalPrice.toLocaleString("id-ID")}
                       </p>
                     </div>
                   )}
@@ -344,12 +354,12 @@ const Catalog = () => {
                     disabled={orderLoading}
                     className="w-full rounded-3xl bg-stone-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {orderLoading ? 'Memproses...' : 'Konfirmasi Pesanan'}
+                    {orderLoading ? "Memproses..." : "Konfirmasi Pesanan"}
                   </button>
 
                   {orderMessage && (
                     <p
-                      className={`text-sm ${orderMessage.toLowerCase().includes('berhasil') ? 'text-emerald-700' : 'text-red-700'}`}
+                      className={`text-sm ${orderMessage.toLowerCase().includes("berhasil") ? "text-emerald-700" : "text-red-700"}`}
                     >
                       {orderMessage}
                     </p>

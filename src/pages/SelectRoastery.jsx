@@ -29,7 +29,7 @@ const SelectRoastery = () => {
         }
 
         const response = await axios.get(
-          "http://localhost:5000/api/products/roasteries",
+          import.meta.env.VITE_API_URL + `/api/products/roasteries`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
 

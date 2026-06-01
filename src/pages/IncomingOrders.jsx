@@ -123,7 +123,7 @@ const IncomingOrders = () => {
         }
 
         const res = await axios.get(
-          "http://localhost:5000/api/transactions/roastery/list",
+          import.meta.env.VITE_API_URL + `/api/transactions/roastery/list`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -169,7 +169,8 @@ const IncomingOrders = () => {
         }
 
         const res = await axios.put(
-          `http://localhost:5000/api/transactions/${transactionId}/status`,
+          import.meta.env.VITE_API_URL +
+            `/api/transactions/${transactionId}/status`,
           { status: newStatus },
           { headers: { Authorization: `Bearer ${token}` } },
         );
@@ -211,7 +212,7 @@ const IncomingOrders = () => {
       }
 
       const res = await fetch(
-        "http://localhost:5000/api/transactions/roastery/export",
+        import.meta.env.VITE_API_URL + `/api/transactions/roastery/export`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
 

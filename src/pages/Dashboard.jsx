@@ -55,7 +55,7 @@ const Dashboard = () => {
 
       const productId = updateStockProduct.id || updateStockProduct._id;
       const response = await axios.put(
-        `http://localhost:5000/api/products/${productId}`,
+        import.meta.env.VITE_API_URL + `/api/products/${productId}`,
         { stock: stockValue },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -107,7 +107,8 @@ const Dashboard = () => {
       }
 
       const response = await axios.put(
-        `http://localhost:5000/api/products/${reduceStockProduct.id || reduceStockProduct._id}`,
+        import.meta.env.VITE_API_URL +
+          `/api/products/${reduceStockProduct.id || reduceStockProduct._id}`,
         {
           stock: reduceStockProduct.stock - amount,
         },
@@ -175,7 +176,7 @@ const Dashboard = () => {
       }
 
       const response = await axios.get(
-        "http://localhost:5000/api/products/my",
+        import.meta.env.VITE_API_URL + `/api/products/my`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -235,7 +236,7 @@ const Dashboard = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:5000/api/transactions",
+        import.meta.env.VITE_API_URL + `/api/transactions`,
         {
           product_id: selectedProduct.id || selectedProduct._id,
           quantity,

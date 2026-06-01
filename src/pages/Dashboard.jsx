@@ -174,9 +174,12 @@ const Dashboard = () => {
         return;
       }
 
-      const response = await axios.get("http://localhost:5000/api/products", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        "http://localhost:5000/api/products/my",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       if (response.data && response.data.success) {
         const cleanedProducts = dedupeProductsByName(response.data.data);
@@ -284,12 +287,22 @@ const Dashboard = () => {
             </span>
           )}
         </div>
-        <button
-          onClick={handleLogout}
-          className="text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors"
-        >
-          Keluar
-        </button>
+        <div className="flex items-center gap-5">
+          {isRoastery && (
+            <button
+              onClick={() => navigate("/incoming-orders")}
+              className="text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors"
+            >
+              Pesanan Masuk
+            </button>
+          )}
+          <button
+            onClick={handleLogout}
+            className="text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors"
+          >
+            Keluar
+          </button>
+        </div>
       </nav>
 
       {/* Main Content: Layout lebih editorial dengan padding besar */}

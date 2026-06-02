@@ -1,5 +1,5 @@
 ﻿import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
@@ -17,13 +17,11 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        import.meta.env.VITE_API_URL + `/api/auth/login`,
-        {
-          email,
-          password,
-        },
-      );
+      const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await axios.post(`${BASE}/api/auth/login`, {
+        email,
+        password,
+      });
 
       // Handle multiple possible data structures
       let token, user;
@@ -119,6 +117,14 @@ const Login = () => {
               required
               className="w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
             />
+            <div className="mt-2 text-right">
+              <Link
+                to="/forgot-password"
+                className="text-xs font-medium text-sky-600 hover:text-sky-500"
+              >
+                Lupa Password?
+              </Link>
+            </div>
           </div>
 
           <button
@@ -128,6 +134,16 @@ const Login = () => {
           >
             {loading ? "Memproses..." : "Login"}
           </button>
+
+          <p className="text-center text-sm text-slate-600">
+            Belum punya akun?{" "}
+            <Link
+              to="/register"
+              className="font-semibold text-sky-600 hover:text-sky-500"
+            >
+              Daftar di sini
+            </Link>
+          </p>
 
           {error && <p className="text-center text-sm text-red-600">{error}</p>}
         </form>

@@ -224,8 +224,11 @@ const Catalog = () => {
               <div key={kopi.id || kopi._id} className="group cursor-pointer">
                 <div className="relative w-full aspect-[4/3] bg-stone-100 rounded-[2rem] overflow-hidden mb-6">
                   <img
-                    src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&q=80&w=600"
-                    alt="Coffee Beans"
+                    src={
+                      kopi.image_url ||
+                      "https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&q=80&w=600"
+                    }
+                    alt={kopi.name || "Coffee Beans"}
                     className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-in-out"
                   />
                   <div className="absolute top-4 left-4">

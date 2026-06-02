@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("roastery");
-  const [nibNumber, setNibNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -18,22 +16,21 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        import.meta.env.VITE_API_URL + `/api/auth/register`,
-        {
-          name,
-          email,
-          password,
-          role,
-          nib_number: nibNumber,
-        },
-      );
+      const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await axios.post(`${BASE}/api/auth/register`, {
+        name,
+        email,
+        password,
+        // Default values for other potential required fields
+        role: "coffee_shop",
+        nib_number: "0000000000",
+      });
 
       if (response.status === 201 || response.data?.success) {
+        alert("Pendaftaran berhasil!");
         navigate("/", {
           state: {
-            success:
-              response.data?.message || "Pendaftaran berhasil. Silakan login.",
+            success: "Pendaftaran berhasil. Silakan login dengan akun baru Anda.",
           },
         });
       } else {
@@ -41,7 +38,7 @@ const Register = () => {
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || err.message || "Pendaftaran gagal.",
+        err.response?.data?.message || err.message || "Pendaftaran gagal. Silakan coba lagi.",
       );
     } finally {
       setLoading(false);
@@ -54,7 +51,7 @@ const Register = () => {
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-semibold text-slate-900">Daftar Akun</h1>
           <p className="mt-2 text-sm text-slate-500">
-            Buat akun baru untuk mengakses dashboard.
+            Lengkapi data di bawah ini untuk mendaftar.
           </p>
         </div>
 
@@ -72,6 +69,7 @@ const Register = () => {
               value={name}
               onChange={(event) => setName(event.target.value)}
               required
+              placeholder="Masukkan nama lengkap"
               className="w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
             />
           </div>
@@ -89,6 +87,7 @@ const Register = () => {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
+              placeholder="nama@email.com"
               className="w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
             />
           </div>
@@ -106,41 +105,7 @@ const Register = () => {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
-              className="w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="role"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
-              Role
-            </label>
-            <select
-              id="role"
-              value={role}
-              onChange={(event) => setRole(event.target.value)}
-              className="w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-            >
-              <option value="roastery">roastery</option>
-              <option value="coffee_shop">coffee_shop</option>
-            </select>
-          </div>
-
-          <div>
-            <label
-              htmlFor="nib_number"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
-              NIB Number
-            </label>
-            <input
-              id="nib_number"
-              type="text"
-              value={nibNumber}
-              onChange={(event) => setNibNumber(event.target.value)}
-              required
+              placeholder="••••••••"
               className="w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
             />
           </div>
@@ -150,8 +115,18 @@ const Register = () => {
             disabled={loading}
             className="flex w-full items-center justify-center rounded-3xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "Memproses..." : "Daftar"}
+            {loading ? "Memproses..." : "Daftar Sekarang"}
           </button>
+
+          <p className="text-center text-sm text-slate-600">
+            Sudah punya akun?{" "}
+            <Link
+              to="/"
+              className="font-semibold text-sky-600 hover:text-sky-500"
+            >
+              Masuk di sini
+            </Link>
+          </p>
 
           {error && <p className="text-center text-sm text-red-600">{error}</p>}
         </form>

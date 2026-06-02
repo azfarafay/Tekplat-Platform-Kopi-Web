@@ -1,6 +1,7 @@
-﻿import { useState, useEffect } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import TrendAnalysis from "../components/TrendAnalysis";
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
@@ -164,7 +165,7 @@ const Dashboard = () => {
     return Array.from(mapByName.values());
   };
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError("");
 
@@ -184,6 +185,7 @@ const Dashboard = () => {
 
       if (response.data && response.data.success) {
         const cleanedProducts = dedupeProductsByName(response.data.data);
+        console.log("Data dari backend:", cleanedProducts);
         setProducts(cleanedProducts);
       } else {
         setError(response.data?.message || "Gagal memuat katalog.");
@@ -197,11 +199,11 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]); // navigate ditambahkan sebagai dependensi
 
   useEffect(() => {
     fetchProducts();
-  }, [navigate]);
+  }, [fetchProducts]);
 
   const openCheckoutModal = (kopi) => {
     setSelectedProduct(kopi);
@@ -339,6 +341,14 @@ const Dashboard = () => {
 
         {isRoastery ? (
           <div className="space-y-12">
+            {/* Analisis Tren Penjualan */}
+            <div className="rounded-[2rem] border border-stone-200 bg-white p-8 shadow-xl">
+              <h3 className="text-2xl font-semibold text-stone-900 mb-6">
+                Analitik Penjualan
+              </h3>
+              <TrendAnalysis roasteryId={user?.id || user?._id} />
+            </div>
+
             {/* Form Update Stok Produk */}
             <div className="rounded-[2rem] border border-stone-200 bg-white p-8 shadow-xl">
               <h3 className="text-2xl font-semibold text-stone-900 mb-2">
@@ -637,8 +647,11 @@ const Dashboard = () => {
                   >
                     <div className="relative w-full aspect-[4/3] bg-stone-100 rounded-[2rem] overflow-hidden mb-6">
                       <img
-                        src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&q=80&w=600"
-                        alt="Coffee Beans"
+                        src={
+                          kopi.image_url ||
+                          "https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&q=80&w=600"
+                        }
+                        alt={kopi.name || "Biji Kopi"}
                         className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-in-out"
                       />
                       <div className="absolute top-4 left-4">
